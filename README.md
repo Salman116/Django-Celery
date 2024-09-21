@@ -1,3 +1,4 @@
+# Django app Creation
 python -m venv venv
 Activate venv
 pip install Django django-cors-headers djangorestframework
