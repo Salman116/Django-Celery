@@ -52,3 +52,8 @@ def my_task(): # you can call this function in your views =>  my_task.delay()
     
     return "task ended"
 
+# Commands:
+- Open another terminal and type this command 
+- celery -A django_celery_project worker -l INFO 
+if you are on windows then run this command
+- celery -A django_celery_project worker -l INFO --pool=solo
