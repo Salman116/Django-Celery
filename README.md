@@ -11,7 +11,8 @@
 - python manage.py runserver 
 
 # To include Celery
-pip install celery redis  # make sure redis is installed in your machine also
+- pip install celery redis  # make sure redis is installed in your machine also
+- Add 'celery' in your INSTALLED_APPS
 
 # Create celery.py file in your project directory where settings.py file is
 # Add these lines in it
@@ -33,10 +34,21 @@ __all__ = ('celery_app',)
 
 # In settings.py add these lines
 # Celery Settings
-CELERY_BROKER_URL = 'redis://redis:6379/0'  # or your broker URL
-CELERY_RESULT_BACKEND = 'redis://redis:6379/0'  # or your result backend
-CELERY_ACCEPT_CONTENT = ['json']
-CELERY_TASK_SERIALIZER = 'json'
-CELERY_RESULT_SERIALIZER = 'json'
-CELERY_TIMEZONE = 'UTC'  # or your timezone
+- CELERY_BROKER_URL = 'redis://localhost:6379/0'
+- CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+- CELERY_ACCEPT_CONTENT = ['json']
+- CELERY_TASK_SERIALIZER = 'json'
+- CELERY_RESULT_SERIALIZER = 'json'
+- CELERY_TIMEZONE = 'UTC'  # or your timezone
+
+# Now you can create your First task in your app directory
+# By making a task.py file there and including these lines
+from celery import shared_task
+
+@shared_task
+def my_task(): # you can call this function in your views =>  my_task.delay()
+    
+    print('Hello from Celery!')
+    
+    return "task ended"
 
