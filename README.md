@@ -1,59 +1,133 @@
 # Django app Creation
-- python -m venv venv 
-- Activate venv 
-- pip install Django django-cors-headers djangorestframework 
-- django-admin startproject django_celery_project . 
-- python manage.py startapp django_celery_app 
-- Add yourappname,  rest_framework,  corsheaders  in INSTALLED_APPS 
-- add .gitignore file 
-- python manage.py makemigrations 
-- python manage.py migrate 
-- python manage.py runserver 
 
-# To include Celery
-- pip install celery redis  # make sure redis is installed in your machine also
-- Add 'celery' in your INSTALLED_APPS
+1. Create a virtual environment:
+    ```bash
+    python -m venv venv
+    ```
 
-# Create celery.py file in your project directory where settings.py file is
-# Add these lines in it
-import os
-from celery import Celery
+2. Activate the virtual environment:
+    ```bash
+    # On Windows
+    venv\Scripts\activate
 
-os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_celery_project.settings')
+    # On macOS/Linux
+    source venv/bin/activate
+    ```
 
-app = Celery('django_celery_project')
+3. Install required packages:
+    ```bash
+    pip install Django django-cors-headers djangorestframework
+    ```
 
-app.config_from_object('django.conf:settings', namespace='CELERY')
+4. Create a new Django project:
+    ```bash
+    django-admin startproject django_celery_project .
+    ```
 
-app.autodiscover_tasks()
+5. Create a new app:
+    ```bash
+    python manage.py startapp django_celery_app
+    ```
 
-# Add these lines in __init__.py file of same directory
-from .celery import app as celery_app
+6. Add `'django_celery_app'`, `'rest_framework'`, `'corsheaders'` to your `INSTALLED_APPS` in `settings.py`.
 
-__all__ = ('celery_app',)
+7. Add `.gitignore` file (make sure you ignore unnecessary files like `db.sqlite3`, `migrations/`, etc.).
 
-# In settings.py add these lines
-# Celery Settings
-- CELERY_BROKER_URL = 'redis://localhost:6379/0'
-- CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
-- CELERY_ACCEPT_CONTENT = ['json']
-- CELERY_TASK_SERIALIZER = 'json'
-- CELERY_RESULT_SERIALIZER = 'json'
-- CELERY_TIMEZONE = 'UTC'  # or your timezone
+8. Run migrations:
+    ```bash
+    python manage.py makemigrations
+    python manage.py migrate
+    ```
 
-# Now you can create your First task in your app directory
-# By making a task.py file there and including these lines
-from celery import shared_task
+9. Start the server:
+    ```bash
+    python manage.py runserver
+    ```
 
-@shared_task
-def my_task(): # you can call this function in your views =>  my_task.delay()
-    
-    print('Hello from Celery!')
-    
-    return "task ended"
+---
 
-# Commands:
-- Open another terminal and type this command 
-- celery -A django_celery_project worker -l INFO 
-if you are on windows then run this command
-- celery -A django_celery_project worker -l INFO --pool=solo
+## To include Celery
+
+1. Install Celery and Redis:
+    ```bash
+    pip install celery redis
+    ```
+
+2. Ensure Redis is installed and running on your machine.
+
+3. Add `'celery'` to `INSTALLED_APPS` in `settings.py`.
+
+4. Create a `celery.py` file in the project directory (where `settings.py` is located) and add the following:
+
+    ```python
+    import os
+    from celery import Celery
+
+    os.environ.setdefault('DJANGO_SETTINGS_MODULE', 'django_celery_project.settings')
+
+    app = Celery('django_celery_project')
+
+    app.config_from_object('django.conf:settings', namespace='CELERY')
+
+    app.autodiscover_tasks()
+    ```
+
+5. Update the `__init__.py` file in the project directory to include:
+
+    ```python
+    from .celery import app as celery_app
+
+    __all__ = ('celery_app',)
+    ```
+
+6. Add the following Celery settings to `settings.py`:
+
+    ```python
+    # Celery Settings
+    CELERY_BROKER_URL = 'redis://localhost:6379/0'
+    CELERY_RESULT_BACKEND = 'redis://localhost:6379/0'
+    CELERY_ACCEPT_CONTENT = ['json']
+    CELERY_TASK_SERIALIZER = 'json'
+    CELERY_RESULT_SERIALIZER = 'json'
+    CELERY_TIMEZONE = 'UTC'
+    ```
+
+---
+
+## Create Your First Celery Task
+
+1. In your app directory (`django_celery_app`), create a `tasks.py` file and add:
+
+    ```python
+    from celery import shared_task
+
+    @shared_task
+    def my_task():
+        print('Hello from Celery!')
+        return "task ended"
+    ```
+
+2. In your views, you can call the task asynchronously:
+
+    ```python
+    my_task.delay()
+    ```
+
+---
+
+## Commands to Run Celery
+
+1. Open another terminal and start the Celery worker:
+
+    ```bash
+    celery -A django_celery_project worker -l INFO
+    ```
+
+    - **If on Windows**, use the following command:
+      ```bash
+      celery -A django_celery_project worker -l INFO --pool=solo
+      ```
+
+---
+
+**Note**: Make sure Redis is running before starting the Celery worker.
